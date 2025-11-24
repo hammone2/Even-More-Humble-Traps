@@ -13,28 +13,45 @@ public class TrapBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var player = other.GetComponent<IPlayerController>();
-        trap.HandleCharacterEntered(player, trapType);
+        var characterController = other.GetComponent<IPlayerController>();
+        trap.HandleCharacterEntered(characterController, trapType);
     }
 }
 
 public class Trap
 {
-    public void HandleCharacterEntered(IPlayerController player, TrapType trapType)
+    public void HandleCharacterEntered(IPlayerController characterController, TrapType trapType)
     {
-        if (player.IsPlayer)
+        if (characterController.IsPlayer)
         {
             if (trapType == TrapType.Player)
-                player.Health--;
+            {
+                characterController.Health--;
+                return;
+            }
+            
+            if (trapType == TrapType.HealthPickup)
+            {
+                characterController.Health++;
+                return;
+            }
+
+            if (trapType == TrapType.InstantDeath)
+            {
+                characterController.Health = 0;
+            }
         }
         else
         {
             if (trapType == TrapType.Npc)
-                player.Health--;
-        }
-
-            
+                characterController.Health--;
+        }    
     }
 }
 
-public enum TrapType { Player, Npc }
+public enum TrapType { 
+    Player, 
+    Npc, 
+    HealthPickup,
+    InstantDeath
+}
